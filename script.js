@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const textContainer = document.getElementById('text-container');
-    const catContainer = document.getElementById('cat-container');
-    const catSprite = document.getElementById('cat-sprite');
 
     const rainbowColors = [
         '#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'
@@ -64,90 +62,64 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animateText);
     }
 
-    // --- Cat Animation ---
+    // --- Dot Trail Animation ---
 
-    let catX = window.innerWidth / 2;
-    let catY = window.innerHeight / 2;
-    let catDirectionX = 3; // Initial speed and direction
-    let catDirectionY = 3;
-    let catRotation = 0;
-    let catFlip = 1; // 1 for normal, -1 for flipped
+    let dotX = window.innerWidth / 2;
+    let dotY = window.innerHeight / 2;
+    let dotDirectionX = 3; // Initial speed and direction
+    let dotDirectionY = 3;
+    const dotSize = 20; // Size of the dot
+    let dotColorIndex = 0; // To cycle colors for the dots
 
-    // Function to create a rainbow-colored trail behind the cat
-    function createCatTrail(x, y, rotation, flip) {
-        const trailElement = document.createElement('img');
-        trailElement.src = catSprite.src; // Use the same image for the trail
-        trailElement.className = 'cat-trail';
-        trailElement.style.left = `${x}px`;
-        trailElement.style.top = `${y}px`;
-        trailElement.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scaleX(${flip})`; // Center it, rotate, and flip
-        document.body.appendChild(trailElement);
+    // Function to create a rainbow-colored trail dot
+    function createTrailDot(x, y, color) {
+        const dotElement = document.createElement('div');
+        dotElement.className = 'trail-dot';
+        dotElement.style.left = `${x}px`;
+        dotElement.style.top = `${y}px`;
+        dotElement.style.backgroundColor = color; // Set dot color
+        document.body.appendChild(dotElement);
 
         // Animate opacity and size to fade out and shrink
         let opacity = 1;
         let scale = 1;
-        let hueRotate = 0; // Initial hue rotation for the trail
-
-        const trailColors = [
-            '#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'
-        ];
-        let currentTrailColorIndex = 0; // Use a distinct index for trail colors
 
         const fadeInterval = setInterval(() => {
             opacity -= 0.05; // Fade out faster
             scale -= 0.02; // Shrink
-            hueRotate = (hueRotate + 10) % 360; // Cycle hue
-
-            // Cycle through distinct colors for the trail
-            currentTrailColorIndex = (currentTrailColorIndex + 1) % trailColors.length;
-            trailElement.style.filter = `drop-shadow(0 0 5px ${trailColors[currentTrailColorIndex]})`; // Apply color as a glow
 
             if (opacity <= 0) {
                 clearInterval(fadeInterval);
-                trailElement.remove();
+                dotElement.remove();
             } else {
-                trailElement.style.opacity = opacity;
-                trailElement.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale * flipX}, ${scale})`; // Scale and maintain flip
+                dotElement.style.opacity = opacity;
+                dotElement.style.transform = `translate(-50%, -50%) scale(${scale})`;
             }
         }, 50); // Adjust speed of fading
     }
 
-    function animateCat() {
-        // Create trail every few frames
-        if (Math.random() < 0.7) { // Adjust frequency of trail creation
-            createCatTrail(catX, catY, catRotation, catFlip);
-        }
-
-        // Move cat
-        catX += catDirectionX;
-        catY += catDirectionY;
+    function animateDot() {
+        // Move dot
+        dotX += dotDirectionX;
+        dotY += dotDirectionY;
 
         // Bounce off walls
-        if (catX + catContainer.offsetWidth / 2 > window.innerWidth || catX - catContainer.offsetWidth / 2 < 0) {
-            catDirectionX *= -1;
-            catFlip *= -1; // Flip the cat horizontally when it hits a side wall
+        if (dotX + dotSize / 2 > window.innerWidth || dotX - dotSize / 2 < 0) {
+            dotDirectionX *= -1;
         }
-        if (catY + catContainer.offsetHeight / 2 > window.innerHeight || catY - catContainer.offsetHeight / 2 < 0) {
-            catDirectionY *= -1;
+        if (dotY + dotSize / 2 > window.innerHeight || dotY - dotSize / 2 < 0) {
+            dotDirectionY *= -1;
         }
 
-        // Apply position and rotation
-        catContainer.style.left = `${catX}px`;
-        catContainer.style.top = `${catY}px`;
-        catSprite.style.transform = `scaleX(${catFlip})`; // Apply flip directly to the sprite
+        // Create trail dot with current rainbow color
+        const trailColor = rainbowColors[dotColorIndex % rainbowColors.length];
+        createTrailDot(dotX, dotY, trailColor);
+        dotColorIndex = (dotColorIndex + 1) % rainbowColors.length; // Cycle color for the next dot
 
-        // Slight random rotation, as seen in the video
-        catRotation = (Math.random() - 0.5) * 10; // -5 to 5 degrees
-        catSprite.style.transform += ` rotate(${catRotation}deg)`; // Add rotation
-
-        requestAnimationFrame(animateCat);
+        requestAnimationFrame(animateDot);
     }
-
-    // Initialize positions
-    catContainer.style.position = 'absolute';
-    catContainer.style.transform = 'translate(-50%, -50%)'; // Center the cat relative to its `left`/`top`
 
     // Start animations
     animateText();
-    animateCat();
+    animateDot();
 });
