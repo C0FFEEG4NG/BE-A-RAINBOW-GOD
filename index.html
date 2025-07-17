@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BE A RAINBOW GOD! Recreation</title>
+    <title>BE A RAINBOW GOD! Recreation (Dot Trail)</title>
     <style>
         body {
             overflow: hidden; /* Hide scrollbars if elements go off-screen */
@@ -34,48 +34,19 @@
             position: relative; /* For jitter effect */
         }
 
-        #cat-container {
+        .trail-dot {
             position: absolute;
-            top: 20%; /* Initial position, adjust as needed */
-            left: 20%;
-            width: 150px; /* Adjust size */
-            height: 150px; /* Adjust size */
-        }
-
-        #cat-sprite {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transform-origin: center; /* For rotations */
-            will-change: transform; /* Optimize animation */
-        }
-
-        .cat-trail {
-            position: absolute;
-            width: 150px; /* Same as cat */
-            height: 150px; /* Same as cat */
+            width: 20px; /* Size of the dot */
+            height: 20px; /* Size of the dot */
+            border-radius: 50%; /* Make it a circle */
             opacity: 0; /* Will be faded in JS */
-            object-fit: contain;
-            transform-origin: center;
-            /* No need for filter: hue-rotate here as we'll use a colored div behind */
-        }
-
-        /* Basic keyframes for some initial ideas, but most animation will be JS */
-        @keyframes jitter {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(2px, -2px); }
-            50% { transform: translate(-2px, 2px); }
-            75% { transform: translate(2px, 2px); }
-            100% { transform: translate(0, 0); }
+            transform: translate(-50%, -50%); /* Center the dot relative to its position */
+            will-change: transform, opacity; /* Optimize animation */
         }
     </style>
 </head>
 <body>
     <div id="text-container"></div>
-    <div id="cat-container">
-        <img id="cat-sprite" src="https://scratch.mit.edu/static/assets/05a2e5d93e18c5e0098f6233519803ce.svg" alt="Scratch Cat">
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
