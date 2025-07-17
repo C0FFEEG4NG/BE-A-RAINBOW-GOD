@@ -64,12 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dot Trail Animation ---
 
-    let dotX = window.innerWidth / 2;
-    let dotY = window.innerHeight / 2;
-    let dotDirectionX = 3; // Initial speed and direction
-    let dotDirectionY = 3;
+    let mouseX = window.innerWidth / 2; // Start in center
+    let mouseY = window.innerHeight / 2; // Start in center
     const dotSize = 20; // Size of the dot
     let dotColorIndex = 0; // To cycle colors for the dots
+    let lastTrailTime = 0;
+    const minTrailInterval = 50; // milliseconds between trail dots (adjust for density)
+
+    // Update mouse coordinates on mouse movement
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
 
     // Function to create a rainbow-colored trail dot
     function createTrailDot(x, y, color) {
@@ -98,28 +104,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50); // Adjust speed of fading
     }
 
-    function animateDot() {
-        // Move dot
-        dotX += dotDirectionX;
-        dotY += dotDirectionY;
-
-        // Bounce off walls
-        if (dotX + dotSize / 2 > window.innerWidth || dotX - dotSize / 2 < 0) {
-            dotDirectionX *= -1;
+    function animateDot(currentTime) {
+        // Create trail dot with current rainbow color based on interval
+        if (currentTime - lastTrailTime > minTrailInterval) {
+            const trailColor = rainbowColors[dotColorIndex % rainbowColors.length];
+            createTrailDot(mouseX, mouseY, trailColor);
+            dotColorIndex = (dotColorIndex + 1) % rainbowColors.length; // Cycle color for the next dot
+            lastTrailTime = currentTime;
         }
-        if (dotY + dotSize / 2 > window.innerHeight || dotY - dotSize / 2 < 0) {
-            dotDirectionY *= -1;
-        }
-
-        // Create trail dot with current rainbow color
-        const trailColor = rainbowColors[dotColorIndex % rainbowColors.length];
-        createTrailDot(dotX, dotY, trailColor);
-        dotColorIndex = (dotColorIndex + 1) % rainbowColors.length; // Cycle color for the next dot
 
         requestAnimationFrame(animateDot);
     }
 
     // Start animations
     animateText();
-    animateDot();
+    // Pass a starting time to animateDot
+    requestAnimationFrame(animateDot);
 });
